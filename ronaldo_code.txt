@@ -1,0 +1,45 @@
+import requests
+import pandas as pd
+from bs4 import BeautifulSoup
+
+page = requests.get("https://fbref.com/en/players/dea698d9/Cristiano-Ronaldo")
+soup = BeautifulSoup(page.content,"html.parser")
+
+single_year = soup.find_all(id="stats")
+seasons = [single_year[x].find(class_="left").get_text() for x in range(0,18)]
+
+all_years = [single_year[x] for x in range(0,18)]
+find_td = [all_years[x].find_all("td") for x in range(0,18)]
+
+age = [find_td[x][0].get_text() for x in range(0,18)]
+club = [find_td[x][1].get_text() for x in range(0,18)]
+rank = [find_td[x][4].get_text() for x in range(0,18)]
+mp = [find_td[x][5].get_text() for x in range(0,18)]
+f11 = [find_td[x][6].get_text() for x in range(0,18)]
+mins = [find_td[x][7].get_text() for x in range(0,18)]
+goals = [find_td[x][8].get_text() for x in range(0,18)]
+assists = [find_td[x][9].get_text() for x in range(0,18)]
+pkg = [find_td[x][10].get_text() for x in range(0,18)]
+pka = [find_td[x][11].get_text() for x in range(0,18)]
+cy = [find_td[x][12].get_text() for x in range(0,18)]
+cr = [find_td[x][13].get_text() for x in range(0,18)]
+gpm = [find_td[x][14].get_text() for x in range(0,18)]
+
+ronaldo_stats = pd.DataFrame({
+    "Seasons":seasons,
+    "Age":age,
+    "Club":club,
+    "League Rank":rank,
+    "Matches Played":mp,
+    "Matches Started by CR7":f11,
+    "Minutes":mins,
+    "Goals":goals,
+    "Assists":assists,
+    "Penalty Goals":pkg,
+    "Penalties Attempted":pka,
+    "Yellow Cards":cy,
+    "Red Cards":cr,
+    "Goals per 90min":gpm
+})
+
+ronaldo_stats.to_csv("Ronaldo_Statistics")
